@@ -1,5 +1,50 @@
 cmake_minimum_required(VERSION 3.18)
-project(SquareArray VERSION 0.0.1 LANGUAGES C CXX)
+project(SquareArray LANGUAGES C CXX)
+
+# derive the project version using git describe / the name of the tarball / zip
+
+if(NOT EXISTS "${CMAKE_SOURCE_DIR}/.git")
+  message(STATUS "No .git directory found ? trying to parse version from directory name")
+
+  # Extract from directory name: square_array-1.2.3 or v1.2.3
+  get_filename_component(FOLDER_NAME ${CMAKE_SOURCE_DIR} NAME)
+  string(REGEX MATCH "([0-9]+\\.[0-9]+\\.[0-9]+)" TARBALL_VERSION ${FOLDER_NAME})
+  if(TARBALL_VERSION)
+    set(PROJECT_VERSION "${TARBALL_VERSION}")
+  else()
+    set(PROJECT_VERSION "0.0.0")
+  endif()
+else()
+  execute_process(
+    COMMAND git describe --tags --long --dirty
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_DESCRIBE
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  message(STATUS "Git describe: ${GIT_DESCRIBE}")
+
+  # Extract base version (remove v prefix)
+  string(REGEX MATCH "v?([0-9]+\\.[0-9]+\\.[0-9]+)" PROJECT_VERSION ${GIT_DESCRIBE})
+  string(REGEX REPLACE "^v" "" PROJECT_VERSION "${PROJECT_VERSION}")
+
+  # Parse version components from PROJECT_VERSION
+  string(REGEX MATCHALL "[0-9]+" VERSION_PARTS "${PROJECT_VERSION}")
+  
+  list(LENGTH VERSION_PARTS _len)
+  if(_len GREATER 0)
+    list(GET VERSION_PARTS 0 PROJECT_VERSION_MAJOR)
+  endif()
+  if(_len GREATER 1)
+    list(GET VERSION_PARTS 1 PROJECT_VERSION_MINOR)
+  endif()
+  if(_len GREATER 2)
+    list(GET VERSION_PARTS 2 PROJECT_VERSION_PATCH)
+  endif()
+ 
+endif()
+
+#----------------------------------------------------------------
+
 
 message(STATUS "Building SquareArray version ${PROJECT_VERSION}")
 
@@ -38,6 +83,9 @@ set_target_properties(square_array PROPERTIES
 )
 
 target_link_libraries(main_square_array PRIVATE square_array)
+
+
+#------------------------------------------------------------------------------------
 
 
 install(TARGETS square_array main_square_array
