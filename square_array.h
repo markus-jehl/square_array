@@ -1,5 +1,5 @@
 #pragma once
 #include <cstddef>
 
-void square_array(float* array, size_t size);
+void square_array(float* array, size_t size, float* result_sum);
 

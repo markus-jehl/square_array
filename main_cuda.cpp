@@ -2,46 +2,62 @@
 #include <iostream>
 #include <cuda_runtime.h>
 
-void print_array(const char* label, const float* array, size_t size) {
+void print_array(const char* label, float* array, size_t size) {
     std::cout << label << ": ";
-    for (size_t i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i)
         std::cout << array[i] << " ";
-    }
     std::cout << "\n";
 }
 
 int main() {
     const size_t N = 10;
+    float sum = 0.0f;
 
-    // --- Host memory
-    float* host_array = new float[N];
-    for (size_t i = 0; i < N; ++i) host_array[i] = static_cast<float>(i + 1);
-    print_array("Host before", host_array, N);
-    square_array(host_array, N);  // Kernel will detect and handle host pointer
-    print_array("Host after ", host_array, N);
-    delete[] host_array;
+    // Host array
+    float host_data[N];
+    for (size_t i = 0; i < N; ++i)
+        host_data[i] = i + 1;
 
-    // --- Device memory
-    float* device_array;
+    std::cout << "\n";
+    print_array("Host input", host_data, N);
+
+    square_array(host_data, N, &sum);
+    print_array("Host output", host_data, N);
+    std::cout << "Host sum of squares: " << sum << "\n";
+
+    // Device array
+    sum = 0.0f;
     float temp[N];
-    for (size_t i = 0; i < N; ++i) temp[i] = static_cast<float>(i + 2);
-    print_array("\nDevice before", temp, N);
-    cudaMalloc(&device_array, N * sizeof(float));
-    cudaMemcpy(device_array, temp, N * sizeof(float), cudaMemcpyHostToDevice);
-    square_array(device_array, N);  // In-place device processing
-    cudaMemcpy(temp, device_array, N * sizeof(float), cudaMemcpyDeviceToHost);
-    print_array("Device after", temp, N);
-    cudaFree(device_array);
+    for (size_t i = 0; i < N; ++i)
+        temp[i] = i + 2;
+    float* dev_data;
+    cudaMalloc(&dev_data, N * sizeof(float));
+    cudaMemcpy(dev_data, temp, N * sizeof(float), cudaMemcpyHostToDevice);
 
-    // --- Managed memory
-    float* managed_array;
-    cudaMallocManaged(&managed_array, N * sizeof(float));
-    for (size_t i = 0; i < N; ++i) managed_array[i] = static_cast<float>(i + 3);
-    print_array("\nManaged before", managed_array, N);
-    square_array(managed_array, N);  // In-place managed processing
-    cudaDeviceSynchronize();  // Ensure kernel completion
-    print_array("Managed after", managed_array, N);
-    cudaFree(managed_array);
+    std::cout << "\n";
+    print_array("Device input", temp, N);
+
+    square_array(dev_data, N, &sum);
+    cudaMemcpy(temp, dev_data, N * sizeof(float), cudaMemcpyDeviceToHost);
+    print_array("Device output", temp, N);
+    std::cout << "Device sum of squares: " << sum << "\n";
+    cudaFree(dev_data);
+
+    // Managed memory
+    sum = 0.0f;
+    float* managed;
+    cudaMallocManaged(&managed, N * sizeof(float));
+    for (size_t i = 0; i < N; ++i)
+        managed[i] = i + 3;
+
+    std::cout << "\n";
+    print_array("Managed input", managed, N);
+
+    square_array(managed, N, &sum);
+    cudaDeviceSynchronize();
+    print_array("Managed output", managed, N);
+    std::cout << "Managed sum of squares: " << sum << "\n";
+    cudaFree(managed);
 
     return 0;
 }
