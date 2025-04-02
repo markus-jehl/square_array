@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 3.18)
-project(SquareArray LANGUAGES C CXX)
+project(SquareArray VERSION 0.0.1 LANGUAGES C CXX)
+
+message(STATUS "Building SquareArray version ${PROJECT_VERSION}")
 
 include(CheckLanguage)
 check_language(CUDA)
+
+include(GNUInstallDirs)
 
 if(CMAKE_CUDA_COMPILER)
     enable_language(CUDA)
@@ -28,13 +32,19 @@ else()
     add_executable(main_square_array main_no_cuda.cpp)
 endif()
 
+set_target_properties(square_array PROPERTIES
+  VERSION ${PROJECT_VERSION}
+  SOVERSION ${PROJECT_VERSION_MAJOR}
+)
+
 target_link_libraries(main_square_array PRIVATE square_array)
 
 
 install(TARGETS square_array main_square_array
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib)
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
 install(FILES square_array.h DESTINATION include)
 
 
