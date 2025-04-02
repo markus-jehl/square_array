@@ -2,8 +2,7 @@
 
 **SquareArray** is a minimal C++/CUDA project that performs elementwise squaring of 1D float arrays.  
 It automatically uses CUDA for GPU acceleration when available, and falls back to OpenMP for parallel CPU execution when CUDA is not detected.  
-When CUDA is availalbe, host or device arrays can be directly passed to the library function
-- [see this example](main_cuda.cpp#L40)
+When CUDA is availalbe, host or device arrays can be directly passed to the library function, [see this example](main_cuda.cpp#L40)
 
 ## Features
 
