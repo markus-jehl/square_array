@@ -1,11 +1,12 @@
 #include "square_array.h"
+#include "square_op.h"
 #include <cuda_runtime.h>
 #include <cstdio>
 
 __global__ void square_kernel(float* data, size_t n) {
     size_t idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < n) {
-        data[idx] *= data[idx];
+        data[idx] = square_compute(data[idx]);
     }
 }
 
