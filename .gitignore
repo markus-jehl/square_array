@@ -1,5 +1,6 @@
 build/*
 build_*/*
+__pycache__/*
 *.i
 *.ii
 *.gpu
