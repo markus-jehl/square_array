@@ -25,6 +25,7 @@ int main() {
     float* device_array;
     float temp[N];
     for (size_t i = 0; i < N; ++i) temp[i] = static_cast<float>(i + 2);
+    print_array("Device before", temp, N);
     cudaMalloc(&device_array, N * sizeof(float));
     cudaMemcpy(device_array, temp, N * sizeof(float), cudaMemcpyHostToDevice);
     square_array(device_array, N);  // In-place device processing
@@ -36,6 +37,7 @@ int main() {
     float* managed_array;
     cudaMallocManaged(&managed_array, N * sizeof(float));
     for (size_t i = 0; i < N; ++i) managed_array[i] = static_cast<float>(i + 3);
+    print_array("Managed before", managed_array, N);
     square_array(managed_array, N);  // In-place managed processing
     cudaDeviceSynchronize();  // Ensure kernel completion
     print_array("Managed after", managed_array, N);
