@@ -1,5 +1,3 @@
-# square_array
-
 # SquareArray
 
 **SquareArray** is a minimal C++/CUDA project that performs elementwise squaring of 1D float arrays.  
@@ -15,7 +13,7 @@ The project uses modern CMake to configure the appropriate backend at build time
 
 ## Requirements
 
-- CMake ? 3.18
+- CMake >= 3.18
 - C++ compiler (GCC, Clang, or MSVC)
 - Optional:
   - CUDA Toolkit (from [NVIDIA CUDA Downloads](https://developer.nvidia.com/cuda-downloads))
@@ -31,7 +29,7 @@ mkdir build
 cd build
 cmake ..
 cmake --build .
-./main
+./main_square_array
 ```
 
 
