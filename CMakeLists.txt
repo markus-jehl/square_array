@@ -26,23 +26,22 @@ else()
   # Extract base version (remove v prefix)
   string(REGEX MATCH "v?([0-9]+\\.[0-9]+\\.[0-9]+)" PROJECT_VERSION ${GIT_DESCRIBE})
   string(REGEX REPLACE "^v" "" PROJECT_VERSION "${PROJECT_VERSION}")
-
-  # Parse version components from PROJECT_VERSION
-  string(REGEX MATCHALL "[0-9]+" VERSION_PARTS "${PROJECT_VERSION}")
-  
-  list(LENGTH VERSION_PARTS _len)
-  if(_len GREATER 0)
-    list(GET VERSION_PARTS 0 PROJECT_VERSION_MAJOR)
-  endif()
-  if(_len GREATER 1)
-    list(GET VERSION_PARTS 1 PROJECT_VERSION_MINOR)
-  endif()
-  if(_len GREATER 2)
-    list(GET VERSION_PARTS 2 PROJECT_VERSION_PATCH)
-  endif()
- 
 endif()
 
+# Parse version components from PROJECT_VERSION
+string(REGEX MATCHALL "[0-9]+" VERSION_PARTS "${PROJECT_VERSION}")
+
+list(LENGTH VERSION_PARTS _len)
+if(_len GREATER 0)
+  list(GET VERSION_PARTS 0 PROJECT_VERSION_MAJOR)
+endif()
+if(_len GREATER 1)
+  list(GET VERSION_PARTS 1 PROJECT_VERSION_MINOR)
+endif()
+if(_len GREATER 2)
+  list(GET VERSION_PARTS 2 PROJECT_VERSION_PATCH)
+endif()
+ 
 #----------------------------------------------------------------
 
 
