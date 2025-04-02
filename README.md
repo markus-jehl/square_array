@@ -32,4 +32,10 @@ cmake --build .
 ./main_square_array
 ```
 
+```bash
+# run python wrapper using different array backends and devices
+# make sure that numpy and array-api-compat are installed
+# cupy and pytorch and array-api-strict are optional
+python main.py
+```
 
