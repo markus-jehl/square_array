@@ -19,9 +19,9 @@ The project uses modern CMake to configure the appropriate backend at build time
   - CUDA Toolkit (from [NVIDIA CUDA Downloads](https://developer.nvidia.com/cuda-downloads))
   - OpenMP support (usually available with most C++ compilers)
 
-## Build Instructions
+## Build + run examples
 
-### 1. Clone the repository
+The builds work on systems with and without CUDA.
 
 ```bash
 cd square_array_project
@@ -29,7 +29,7 @@ mkdir build
 cd build
 cmake ..
 cmake --build .
-./main_square_array
+./main
 ```
 
 ```bash
