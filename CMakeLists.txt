@@ -28,6 +28,11 @@ list(GET VERSION_PARTS 2 PROJECT_VERSION_PATCH)
 
 message(STATUS "Building version ${PROJECT_VERSION}")
 
+option(DEBUG "Enable debug printing" OFF)
+if(DEBUG)
+    add_compile_definitions(DEBUG)
+endif()
+
 if(CMAKE_CUDA_COMPILER)
     enable_language(CUDA)
     find_package(CUDAToolkit REQUIRED)

@@ -26,6 +26,7 @@ The main executable is build from [main_cuda.cpp](main_cuda.cpp) or [main_no_cud
 ```bash
 mkdir build
 cd build
+# you can used -DDEBUG=ON to get the debug print statements
 cmake ..
 cmake --build .
 ./main

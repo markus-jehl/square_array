@@ -1,5 +1,6 @@
 #include "square_array.h"
 #include "square_op.h"
+#include "debug.h"
 #include <cuda_runtime.h>
 #include <iostream>
 #include <stdexcept>
@@ -26,7 +27,7 @@ void square_array(float* array, size_t size, float* result_sum, int device_id) {
 //#if CUDART_VERSION >= 10000
     if (err == cudaSuccess && (attr.type == cudaMemoryTypeDevice || attr.type == cudaMemoryTypeManaged)){
         is_device_ptr = true;
-        std::cout << "Array in on device: " << attr.device << std::endl;
+        DEBUG_PRINT("Array is on device: %d\n", attr.device);
     }
 //#else
 //    if (err == cudaSuccess && attr.memoryType == cudaMemoryTypeDevice)
@@ -46,7 +47,7 @@ void square_array(float* array, size_t size, float* result_sum, int device_id) {
             throw std::runtime_error("Invalid CUDA device ID: " + std::to_string(device_id));
         }
 
-        std::cout << "COPYING HOST TO DEVICE" << std::endl;
+        DEBUG_PRINT("Copying array from host to device\n");
         cudaSetDevice(device_id);
 
         cudaMalloc(&device_array, size * sizeof(float));
@@ -57,7 +58,7 @@ void square_array(float* array, size_t size, float* result_sum, int device_id) {
     // get and print the current cuda device ID
     int current_device_id;
     cudaGetDevice(&current_device_id);
-    std::cout << "Using CUDA device: " << current_device_id << std::endl;
+    DEBUG_PRINT("Using CUDA device: %d\n", current_device_id);
 
     // Allocate memory for the sum on the device
     cudaMalloc(&device_sum, sizeof(float));
