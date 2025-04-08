@@ -45,6 +45,8 @@ void square_array(float* array, size_t size, float* result_sum, int device_id) {
         if (device_id >= device_count) {
             throw std::runtime_error("Invalid CUDA device ID: " + std::to_string(device_id));
         }
+
+        std::cout << "COPYING HOST TO DEVICE" << std::endl;
         cudaSetDevice(device_id);
 
         cudaMalloc(&device_array, size * sizeof(float));

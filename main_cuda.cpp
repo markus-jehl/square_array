@@ -15,18 +15,18 @@ void print_array(const char* label, float* array, size_t size) {
 }
 
 int main() {
-    const size_t N = 10000;
+    const size_t N = 10000000;
     float sum = 0.0f;
 
-    ////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
     // Host array use case
-    ////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
 
     // get the number of cuda devices - because we want to run on the last device
     int device_count;
     cudaGetDeviceCount(&device_count);
 
-    float host_data[N];
+    float* host_data = new float[N];
     for (size_t i = 0; i < N; ++i)
         host_data[i] = i + 1;
 
@@ -53,7 +53,7 @@ int main() {
     ////////////////////////////////////////////////////////
 
     float sum_d = 0.0f;
-    float temp[N];
+    float* temp = new float[N];
     for (size_t i = 0; i < N; ++i)
         temp[i] = i + 1;
     float* dev_data;
