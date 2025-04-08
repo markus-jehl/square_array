@@ -48,6 +48,8 @@ int main() {
     print_array("Host output", host_data, N);
     std::cout << "Host output sum: " << sum << "\n";
 
+    delete[] host_data;
+
     ////////////////////////////////////////////////////////
     // Device array use case
     ////////////////////////////////////////////////////////
@@ -72,6 +74,8 @@ int main() {
     print_array("Device output", temp, N);
     std::cout << "Device output sum: " << sum_d << "\n";
     cudaFree(dev_data);
+
+    delete[] temp;
 
     ////////////////////////////////////////////////////////
     // CUDA memory managed use case
