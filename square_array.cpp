@@ -1,7 +1,7 @@
 #include "square_array.h"
 #include "square_op.h"
 
-void square_array(float* array, size_t size, float* result_sum) {
+void square_array(float* array, size_t size, float* result_sum, int device_id) {
     *result_sum = 0.0f;
 
 #pragma omp parallel for
