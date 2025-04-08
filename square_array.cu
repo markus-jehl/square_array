@@ -13,50 +13,53 @@ __global__ void square_kernel(float* data, size_t n, float* sum) {
 
 void square_array(float* array, size_t size, float* result_sum, int device_id) {
 
-    // the default device_id defined in the header is -1 (current active device)
-    // if specified by the user, set the device_id (must be >= 0)
-    if (device_id >= 0) {
-        int device_count = 0;
-        cudaGetDeviceCount(&device_count);
-    
-        if (device_id >= device_count) {
-            throw std::runtime_error("Invalid CUDA device ID: " + std::to_string(device_id));
-        }
-    
-        cudaSetDevice(device_id);
-    }
-
-    int current_device;
-    cudaGetDevice(&current_device);
-    std::cout << "Using CUDA device " << current_device << std::endl;
-
     float* device_array = nullptr;
     float* device_sum = nullptr;
     bool needs_copy_back = false;
     float zero = 0.0f;
 
-    cudaMalloc(&device_sum, sizeof(float));
-    cudaMemcpy(device_sum, &zero, sizeof(float), cudaMemcpyHostToDevice);
-
     cudaPointerAttributes attr;
     cudaError_t err = cudaPointerGetAttributes(&attr, array);
+
     bool is_device_ptr = false;
 
-#if CUDART_VERSION >= 10000
-    if (err == cudaSuccess && (attr.type == cudaMemoryTypeDevice || attr.type == cudaMemoryTypeManaged))
+//#if CUDART_VERSION >= 10000
+    if (err == cudaSuccess && (attr.type == cudaMemoryTypeDevice || attr.type == cudaMemoryTypeManaged)){
         is_device_ptr = true;
-#else
-    if (err == cudaSuccess && attr.memoryType == cudaMemoryTypeDevice)
-        is_device_ptr = true;
-#endif
+        std::cout << "Array in on device: " << attr.device << std::endl;
+    }
+//#else
+//    if (err == cudaSuccess && attr.memoryType == cudaMemoryTypeDevice)
+//        is_device_ptr = true;
+//#endif
 
     if (is_device_ptr) {
         device_array = array;
+        // use the device ID of the pointer to set the device
+        cudaSetDevice(attr.device);
     } else {
+
+        // set the device ID as specified
+        int device_count = 0;
+        cudaGetDeviceCount(&device_count);
+        if (device_id >= device_count) {
+            throw std::runtime_error("Invalid CUDA device ID: " + std::to_string(device_id));
+        }
+        cudaSetDevice(device_id);
+
         cudaMalloc(&device_array, size * sizeof(float));
         cudaMemcpy(device_array, array, size * sizeof(float), cudaMemcpyHostToDevice);
         needs_copy_back = true;
     }
+
+    // get and print the current cuda device ID
+    int current_device_id;
+    cudaGetDevice(&current_device_id);
+    std::cout << "Using CUDA device: " << current_device_id << std::endl;
+
+    // Allocate memory for the sum on the device
+    cudaMalloc(&device_sum, sizeof(float));
+    cudaMemcpy(device_sum, &zero, sizeof(float), cudaMemcpyHostToDevice);
 
     int threads = 256;
     int blocks = (int)((size + threads - 1) / threads);

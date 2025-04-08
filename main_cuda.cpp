@@ -22,6 +22,10 @@ int main() {
     // Host array use case
     ////////////////////////////////////////////////////////
 
+    // get the number of cuda devices - because we want to run on the last device
+    int device_count;
+    cudaGetDeviceCount(&device_count);
+
     float host_data[N];
     for (size_t i = 0; i < N; ++i)
         host_data[i] = i + 1;
@@ -40,7 +44,7 @@ int main() {
     }
     
     // use default device ID 0
-    square_array(host_data, N, &sum);
+    square_array(host_data, N, &sum, device_count - 1);
     print_array("Host output", host_data, N);
     std::cout << "Host output sum: " << sum << "\n";
 
@@ -53,13 +57,17 @@ int main() {
     for (size_t i = 0; i < N; ++i)
         temp[i] = i + 1;
     float* dev_data;
+    cudaSetDevice(0);
     cudaMalloc(&dev_data, N * sizeof(float));
     cudaMemcpy(dev_data, temp, N * sizeof(float), cudaMemcpyHostToDevice);
 
     std::cout << "\n";
     print_array("Device input", temp, N);
 
-    square_array(dev_data, N, &sum_d, 0);
+    // if we are passing a device array, the device ID is ignored
+    // because the array is already on the device
+    // the device ID is obtained from the device array itself
+    square_array(dev_data, N, &sum_d, 999);
     cudaMemcpy(temp, dev_data, N * sizeof(float), cudaMemcpyDeviceToHost);
     print_array("Device output", temp, N);
     std::cout << "Device output sum: " << sum_d << "\n";
@@ -69,12 +77,9 @@ int main() {
     // CUDA memory managed use case
     ////////////////////////////////////////////////////////
 
-    // get the number of cuda devices - because we want to run on the last device
-    int device_count;
-    cudaGetDeviceCount(&device_count);
-
     float sum_m = 0.0f;
     float* managed;
+    cudaSetDevice(device_count - 1);
     cudaMallocManaged(&managed, N * sizeof(float));
     for (size_t i = 0; i < N; ++i)
         managed[i] = i + 1;
@@ -82,8 +87,10 @@ int main() {
     std::cout << "\n";
     print_array("Managed input", managed, N);
 
-    // use cuda managed memory and run on last device
-    square_array(managed, N, &sum_m, device_count - 1);
+    // if we are passing a cuda managed array, the device ID is ignored
+    // because the array is already on the device
+    // the device ID is obtained from the device array itself
+    square_array(managed, N, &sum_m, 999);
     cudaDeviceSynchronize();
     print_array("Managed output", managed, N);
     std::cout << "Managed output sum: " << sum_m << "\n";
